@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ThreadTest extends TestCase
 {
@@ -20,10 +19,27 @@ class ThreadTest extends TestCase
     /**
      * @test
      */
+    public function test_a_thread_can_make_a_string_path()
+    {
+        $thread = factory('App\Thread')->create();
+        $this->assertEquals("/threads/{$thread->channel->slug}/{$thread->id}", $thread->path());
+    }
+
+    /**
+     * @test
+     */
     public function test_a_thread_has_creator()
     {
 
         $this->assertInstanceOf('App\User', $this->thread->creator );
+    }
+
+    /** @test */
+    function test_a_thread_has_replies()
+    {
+        $this->assertInstanceOf(
+            'Illuminate\Database\Eloquent\Collection', $this->thread->replies
+        );
     }
 
     /**
@@ -37,5 +53,12 @@ class ThreadTest extends TestCase
         ]);
 
         $this->assertcount(1, $this->thread->replies);
+    }
+
+    public function test_a_thread_belongs_to_a_channel()
+    {
+        $thread = factory('App\Thread')->create();
+
+        $this->assertInstanceOf('App\Channel', $thread->channel);
     }
 }
