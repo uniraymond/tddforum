@@ -61,4 +61,11 @@ class ThreadTest extends TestCase
 
         $this->assertInstanceOf('App\Channel', $thread->channel);
     }
+
+    public function test_a_user_email()
+    {
+        $user = factory('App\User')->create(['email' => 'cool@temp.com']);
+
+        $this->assertDatabaseHas('Users', ['email' => 'cool@temp.com']);
+    }
 }

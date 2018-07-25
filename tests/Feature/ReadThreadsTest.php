@@ -7,7 +7,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ThreadsTest extends TestCase
+class ReadThreadsTest extends TestCase
 {
     protected $thread;
     protected $replies;
@@ -39,5 +39,16 @@ class ThreadsTest extends TestCase
         $response = $this->get($this->thread->path())
                     ->assertSee($this->reply->body);
         
+    }
+
+    public function test_a_user_can_filter_threads_according_to_a_channel()
+    {
+        $channel = factory('App\Channel')->create();
+        $threadInChannel = create('App\Thread', ['channel_id' => $channel->id]);
+        $threadNotInChannel = factory('App\Thread')->create();
+
+        $this->get('/threads/' . $channel->slug)
+            ->assertSee($threadInChannel->title)
+            ->assertDontSee($threadNotInChannel->title);
     }
 }
